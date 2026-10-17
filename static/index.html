@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Credit Risk Assessment</title>
+  <meta name="description" content="ML-powered loan default risk assessment." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="grid"></span>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      </span>
+      <span class="brand-name">Credit<span>Lens</span></span>
+    </div>
+    <div class="status" id="status" data-state="checking">
+      <span class="dot"></span><span id="statusText">Connecting…</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ============ FORM ============ -->
+    <section class="card form-card reveal" style="--d:0ms">
+      <div class="card-head">
+        <h1>Loan risk assessment</h1>
+        <p>Enter the applicant's details. The model estimates the probability of default in real time.</p>
+      </div>
+
+      <form id="form" novalidate>
+        <fieldset>
+          <legend><span class="step">1</span> Applicant</legend>
+          <div class="grid-2">
+            <div class="field">
+              <label for="person_age">Age</label>
+              <div class="input"><input id="person_age" name="person_age" type="number" min="18" max="100" step="1" placeholder="28" required /><em>yrs</em></div>
+            </div>
+            <div class="field">
+              <label for="person_income">Annual income</label>
+              <div class="input"><i>$</i><input id="person_income" name="person_income" type="number" min="1" step="any" placeholder="65000" required /></div>
+            </div>
+            <div class="field">
+              <label for="person_home_ownership">Home ownership</label>
+              <div class="input select">
+                <select id="person_home_ownership" name="person_home_ownership" required>
+                  <option value="RENT">Rent</option>
+                  <option value="OWN">Own</option>
+                  <option value="MORTGAGE">Mortgage</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="person_emp_length">Employment length</label>
+              <div class="input"><input id="person_emp_length" name="person_emp_length" type="number" min="0" max="80" step="any" placeholder="4" required /><em>yrs</em></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="step">2</span> Loan</legend>
+          <div class="grid-2">
+            <div class="field">
+              <label for="loan_intent">Purpose</label>
+              <div class="input select">
+                <select id="loan_intent" name="loan_intent" required>
+                  <option value="PERSONAL">Personal</option>
+                  <option value="EDUCATION">Education</option>
+                  <option value="MEDICAL">Medical</option>
+                  <option value="VENTURE">Venture</option>
+                  <option value="HOMEIMPROVEMENT">Home improvement</option>
+                  <option value="DEBTCONSOLIDATION">Debt consolidation</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="loan_amnt">Loan amount</label>
+              <div class="input"><i>$</i><input id="loan_amnt" name="loan_amnt" type="number" min="1" step="any" placeholder="10000" required /></div>
+            </div>
+            <div class="field">
+              <label for="loan_int_rate">Interest rate</label>
+              <div class="input"><input id="loan_int_rate" name="loan_int_rate" type="number" min="0" max="100" step="any" placeholder="11.5" required /><em>%</em></div>
+            </div>
+            <div class="field">
+              <label for="loan_percent_income">Loan-to-income <span class="hint">auto</span></label>
+              <div class="input readonly"><input id="loan_percent_income" name="loan_percent_income" type="number" step="any" placeholder="—" readonly tabindex="-1" /><em>ratio</em></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Loan grade</label>
+            <div class="segmented" id="gradeGroup" role="radiogroup" aria-label="Loan grade">
+              <input type="radio" name="loan_grade" id="g-A" value="A" /><label for="g-A">A</label>
+              <input type="radio" name="loan_grade" id="g-B" value="B" checked /><label for="g-B">B</label>
+              <input type="radio" name="loan_grade" id="g-C" value="C" /><label for="g-C">C</label>
+              <input type="radio" name="loan_grade" id="g-D" value="D" /><label for="g-D">D</label>
+              <input type="radio" name="loan_grade" id="g-E" value="E" /><label for="g-E">E</label>
+              <input type="radio" name="loan_grade" id="g-F" value="F" /><label for="g-F">F</label>
+              <input type="radio" name="loan_grade" id="g-G" value="G" /><label for="g-G">G</label>
+              <span class="thumb" aria-hidden="true"></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="step">3</span> Credit history</legend>
+          <div class="grid-2">
+            <div class="field">
+              <label for="cb_person_cred_hist_length">Credit history length</label>
+              <div class="input"><input id="cb_person_cred_hist_length" name="cb_person_cred_hist_length" type="number" min="0" max="80" step="1" placeholder="5" required /><em>yrs</em></div>
+            </div>
+            <div class="field">
+              <label>Previous default on file</label>
+              <div class="segmented two" id="defaultGroup" role="radiogroup" aria-label="Previous default">
+                <input type="radio" name="cb_person_default_on_file" id="d-N" value="N" checked /><label for="d-N">No</label>
+                <input type="radio" name="cb_person_default_on_file" id="d-Y" value="Y" /><label for="d-Y">Yes</label>
+                <span class="thumb" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="button" class="btn ghost" id="fillBtn">Fill sample</button>
+          <button type="button" class="btn ghost" id="resetBtn">Reset</button>
+          <button type="submit" class="btn primary" id="submitBtn">
+            <span class="btn-label">Assess risk</span>
+            <span class="spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+        <p class="form-error" id="formError" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <!-- ============ RESULT ============ -->
+    <aside class="card result-card reveal" style="--d:120ms" id="resultCard" data-state="idle" aria-live="polite">
+      <div class="card-head">
+        <h2>Risk profile</h2>
+        <p id="resultSub">Results appear here after you run an assessment.</p>
+      </div>
+
+      <div class="gauge-wrap">
+        <svg class="gauge" viewBox="0 0 220 135" role="img" aria-label="Default probability gauge">
+          <defs>
+            <linearGradient id="gaugeGrad" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="200" y2="0">
+              <stop offset="0%"  stop-color="#34d399" />
+              <stop offset="50%" stop-color="#fbbf24" />
+              <stop offset="100%" stop-color="#f87171" />
+            </linearGradient>
+          </defs>
+          <path class="track" d="M 20 110 A 90 90 0 0 1 200 110" />
+          <path class="fill" id="gaugeFill" d="M 20 110 A 90 90 0 0 1 200 110" />
+          <g id="thresholdTick" class="tick" opacity="0">
+            <line id="tickLine" x1="0" y1="0" x2="0" y2="0" />
+          </g>
+        </svg>
+        <div class="gauge-readout">
+          <div class="pct"><span id="pctValue">0.0</span><small>%</small></div>
+          <div class="pct-label">probability of default</div>
+        </div>
+      </div>
+
+      <div class="verdict" id="verdict">
+        <span class="verdict-dot"></span>
+        <span id="verdictText">Awaiting input</span>
+      </div>
+
+      <dl class="facts">
+        <div><dt>Decision threshold</dt><dd id="factThreshold">—</dd></div>
+        <div><dt>Model prediction</dt><dd id="factPrediction">—</dd></div>
+        <div><dt>Loan-to-income</dt><dd id="factLti">—</dd></div>
+        <div><dt>Margin to threshold</dt><dd id="factMargin">—</dd></div>
+      </dl>
+
+      <p class="disclaimer">Model output is a statistical estimate and should support, not replace, human underwriting decisions.</p>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
